@@ -8,9 +8,11 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Response;
 
 class EventsController extends BaseController
 {
+
     /*
      Requirements:
     - maximum 2 sql queries
@@ -96,8 +98,27 @@ class EventsController extends BaseController
     ]
      */
 
-    public function getEventsWithWorkshops() {
-        throw new \Exception('implement in coding task 1');
+    public function getEventsWithWorkshops()
+    {
+        $response = [];
+        $allEvents = Event::with('workshops')->get();
+        foreach ($allEvents as $key => $event) {
+            $response[ $key ][ 'id' ] = $event->id;
+            $response[ $key ][ 'name' ] = $event->name;
+            $response[ $key ][ 'created_at' ] = $event->created_at;
+            $response[ $key ][ 'updated_at' ] = $event->updated_at;
+            foreach ($event->workshops as $w => $workshop) {
+                $response[ $key ][ 'workshops' ][ $w ][ 'id' ] = $workshop->id;
+                $response[ $key ][ 'workshops' ][ $w ][ 'start' ] = $workshop->start;
+                $response[ $key ][ 'workshops' ][ $w ][ 'end' ] = $workshop->end;
+                $response[ $key ][ 'workshops' ][ $w ][ 'event_id' ] = $workshop->event_id;
+                $response[ $key ][ 'workshops' ][ $w ][ 'name' ] = $workshop->name;
+                $response[ $key ][ 'workshops' ][ $w ][ 'created_at' ] = $workshop->created_at;
+                $response[ $key ][ 'workshops' ][ $w ][ 'updated_at' ] = $workshop->updated_at;
+            }
+        }
+
+        return Response::json($response);
     }
 
 
@@ -175,7 +196,8 @@ class EventsController extends BaseController
     ```
      */
 
-    public function getFutureEventsWithWorkshops() {
+    public function getFutureEventsWithWorkshops()
+    {
         throw new \Exception('implement in coding task 2');
     }
 }
